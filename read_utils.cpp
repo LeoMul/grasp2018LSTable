@@ -1,6 +1,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstring>
+
 #include <vector>
 #include <regex>
 #include <stdio.h>
