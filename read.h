@@ -3,4 +3,6 @@
 using namespace std;
 
 void MyFunc();
-vector<string> ParseLine(string line_c);
+void parseLSJFile(const char* filename);
+
+

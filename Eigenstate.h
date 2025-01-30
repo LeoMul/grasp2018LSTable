@@ -10,7 +10,7 @@ class Eigenstate {
         char parity;
         vector<double> expansion_coefficients;
         vector<string> expansion_csfs;
-        string expansion_string = "";
+        string expansion_string;
     //definition;
         Eigenstate(
             double energy_in,
@@ -25,5 +25,5 @@ class Eigenstate {
            expansion_csfs(expansion_csfs_in) {}
     //print for now
         void display();
-        void make_string();
+        void make_string(int max_length);
 };

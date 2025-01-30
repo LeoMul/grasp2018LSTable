@@ -12,7 +12,7 @@ void Eigenstate::make_string(int max_length){
 
         if (ii >0 ){expansion_string+="+ ";} 
         
-        expansion_string += to_string(expansion_coefficients[ii]) +" ";
+        expansion_string += to_string(100.0*expansion_coefficients[ii]) +"% ";
         int diff = max_length - expansion_csfs[ii].size();
         for (int jj = 0; jj<diff;jj++){
             spaces += " ";

@@ -1,6 +1,6 @@
 #include <iostream>
 #include <fstream>
-#include "read.cpp"
+#include "readJJ.cpp"
 #include "argparse.cpp"
 
 using namespace std;
