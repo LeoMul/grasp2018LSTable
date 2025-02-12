@@ -12,7 +12,7 @@
 using namespace std;
 #define COUNT (4*1024*1024)             // number of values to sort
 
-void parseLSJFile(const char* filename){
+void parseLSJFile(const char* filename,int num){
     string Text;
     string Delimit = " ";
     vector<string> TextArray;
@@ -27,6 +27,7 @@ void parseLSJFile(const char* filename){
     float percent;
     char lll;
     int count = 0;
+
    //getline (File, Text,'\n');
    //const char *line = Text.c_str();
 
@@ -109,7 +110,11 @@ void parseLSJFile(const char* filename){
     size_t index;
     string header = "Level,  J, P,   Energy(Ry), ASF\n";
     printf("%s",header.c_str());
-    for (int kk = 0;kk<count;kk++) {
+    int numberToPrint = count; 
+    if (num != -1){ 
+         numberToPrint = min(count,num);
+    }
+    for (int kk = 0;kk<numberToPrint;kk++) {
         index = I[kk];
         Eigenstate state = Eigenstates[index];
         energy_above_ground = (state.energy - ground_energy)*2.0; 

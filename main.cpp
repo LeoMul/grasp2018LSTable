@@ -14,12 +14,29 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
+  int num = -1; 
+  if(cmdOptionExists(argv, argv+argc, "-n"))
+    {   
+        //ugly c++ code...
+        char * numm = getCmdOption(argv, argv + argc, "-n");
+        int length = strlen(numm); 
+        char numAgain[length+1];
+
+        strcpy(numAgain,numm);
+        
+        num = atoi(numAgain);
+
+
+        //string file_path = "SeIII_000.lsj.lbl";
+
+  }
+
   if(cmdOptionExists(argv, argv+argc, "-f"))
     {   
         char * file_path = getCmdOption(argv, argv + argc, "-f");
         //string file_path = "SeIII_000.lsj.lbl";
         //cout << file_path << "\n" ;
-        parseLSJFile(file_path);
+        parseLSJFile(file_path,num);
     }
   else{
         //no file - no program.
