@@ -75,7 +75,7 @@ void parseLSJFile(const char* filename,int num){
            energies[count] = energy;
            count++;
            if (count >= COUNT-1){
-                cout << 'overflow in COUNT variable - you need to code this better Leo. \n';
+                cout << "overflow in COUNT variable - you need to code this better Leo. \n";
            }
            pos    = stoi(TextArray[0]);
            JMOM   = stoi(TextArray[1]);
