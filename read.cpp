@@ -5,14 +5,35 @@
 #include <vector>
 #include <regex>
 #include <stdio.h>
-#include "Eigenstate.cpp"
+//#include "Eigenstate.cpp"
 #include "sort.cpp"
 #include "read_utils.cpp"
+#include "adas.cpp"
 
 using namespace std;
 #define COUNT (4*1024*1024)             // number of values to sort
 
-void parseLSJFile(const char* filename,int num){
+float decodeAngularMomentum(string jmomString){
+    char twojArray[4];
+    //cout << "hello"<<jmomString << '\n';
+    //std::flush(std::cout);
+    for (int ii =0;ii<jmomString.size();ii++){
+        if(jmomString != "/"){
+            twojArray[ii] = jmomString[ii];
+        } else {
+            break;
+        }
+    }
+    float j = atof(twojArray)*0.5;
+    //std::cout << j << " "<< jmomString << '\n';
+    return j;
+}
+
+
+void parseLSJFile(const char* filename,
+                  vector<Eigenstate> &Eigenstates,
+                   int &totalNumStates, int &max_length
+                ){
     string Text;
     string Delimit = " ";
     vector<string> TextArray;
@@ -21,21 +42,25 @@ void parseLSJFile(const char* filename,int num){
     //cout << Text << '\n';
     vector<int> positions;
     int pos;
-    int JMOM;
+    float JMOM;
     char parity;
     double energy;
     float percent;
     char lll;
     int count = 0;
 
-   //getline (File, Text,'\n');
-   //const char *line = Text.c_str();
 
    getline (File, Text,'\n');
 
    TextArray = ParseLine(Text);
    pos    = stoi(TextArray[0]);
-   JMOM   = stoi(TextArray[1]);
+   //cout << "hello"<<TextArray[1] << '\n';
+   //std::flush(std::cout);
+   JMOM   = decodeAngularMomentum(TextArray[1]);
+
+
+   string jstring = TextArray[1];
+
    parity = TextArray[2].c_str()[0];
    energy = stod(TextArray[3]);
    
@@ -44,11 +69,14 @@ void parseLSJFile(const char* filename,int num){
    double  * energies = (double *)  malloc(COUNT*sizeof(double));
    size_t * I = (size_t *) malloc(COUNT*sizeof(size_t));
 
-   vector<Eigenstate> Eigenstates;
+   //vector<Eigenstate> Eigenstates;
+   vector<Eigenstate> EigenStateCopy;
    bool inEingstate = false;
 
-   int max_length = 0;
- 
+   max_length = 0;
+   
+
+
    while(!File.eof()){  
        getline (File, Text,'\n');
        TextArray = ParseLine(Text);
@@ -63,6 +91,7 @@ void parseLSJFile(const char* filename,int num){
         //new eigenstate
            Eigenstate prev_eigen_state = Eigenstate(energy,JMOM,parity,expansion_coef,expansion_csfs);
            Eigenstates.push_back(prev_eigen_state);
+
            for(int jj = 0; jj< expansion_csfs.size(); jj++){
                 if( expansion_csfs[jj].size() > max_length){
                     max_length = expansion_csfs[jj].size();
@@ -73,12 +102,14 @@ void parseLSJFile(const char* filename,int num){
            expansion_csfs.clear();
            positions.push_back(pos);
            energies[count] = energy;
+
            count++;
            if (count >= COUNT-1){
                 cout << "overflow in COUNT variable - you need to code this better Leo. \n";
            }
            pos    = stoi(TextArray[0]);
-           JMOM   = stoi(TextArray[1]);
+
+           JMOM   = decodeAngularMomentum(TextArray[1]);
            parity = TextArray[2].c_str()[0];
            energy = stod(TextArray[3]);
        }
@@ -105,28 +136,84 @@ void parseLSJFile(const char* filename,int num){
     }
     argQuickSort(energies,I,0,count-1);
 
-    double ground_energy = energies[I[0]];
-    double energy_above_ground;
-    size_t index;
-    string header = "Level,  J, P,   Energy(Ry), ASF\n";
-    printf("%s",header.c_str());
-    int numberToPrint = count; 
-    if (num != -1){ 
-         numberToPrint = min(count,num);
-    }
-    for (int kk = 0;kk<numberToPrint;kk++) {
-        index = I[kk];
-        Eigenstate state = Eigenstates[index];
-        energy_above_ground = (state.energy - ground_energy)*2.0; 
-        state.make_string(max_length);
-        //cout << energy_above_ground << " ";
-        //cout << state.parity;
-        printf("%5d, %2d, %c, %12.9f, %s",kk+1,state.jmom,state.parity,energy_above_ground,state.expansion_string.c_str());
-        cout << '\n';
+    //Sort eigenstates again.. 
+    double* energiesCopy = energies;
+    EigenStateCopy = Eigenstates;   
+    for(int ii=0;ii<Eigenstates.size();ii++){
+        Eigenstates[ii] = EigenStateCopy[I[ii]];
+        energies[ii] = energiesCopy[I[ii]];
     } 
 
-    
+    double ground_energy = energies[I[0]];
+    double energy_above_ground;
+    totalNumStates = count;
 
-    //quickSort(positions,0,positions.size()-1);
 }
+
+void displayLSJ(vector<Eigenstate> eigVector,int numPrint ,int totalNumStates, int max_length){
+    size_t index;
+    string header = "Level,  J, P,   Energy(Ry), ASF\n";
+
+    int numberToPrint = totalNumStates; 
+    if (numPrint != -1){ 
+         numberToPrint = min(totalNumStates,numPrint);
+    }
+
+    double energy_above_ground; 
+    double ground_energy = eigVector[0].energy;
+    //printf("%d hello\n",numberToPrint);
+    //std::flush(std::cout);
+    printf("%s",header.c_str());
+
+    for (int kk = 0;kk<numberToPrint;kk++) {
+        Eigenstate state = eigVector[kk];
+        energy_above_ground = (state.energy - ground_energy)*2.0; 
+        state.make_string(max_length);
+        printf("%5d, %4.1f, %c, %12.9f, %s",kk+1,state.jmom,state.parity,energy_above_ground,state.expansion_string.c_str());
+        cout << '\n';
+    } 
+}
+
+ void adas(vector<Eigenstate> Eigenstates,int numPrint ,int totalNumStates, int max_length){
+     //int numberToPrint = numPrint;
+    int numberToPrint = totalNumStates; 
+    if (numPrint != -1){ 
+         numberToPrint = min(totalNumStates,numPrint);
+    }
+     printf("&ADASEX NLEVS= %d NUMTMP=19 IRDTMP=1 ITCC=1 IBORN=0 IELAS=0 IEL='SYMBOL_HERE' FIPOT=0.0 IONTRM='TERM_HERE'/\n",numberToPrint);
+     printf("1.00+03 1.50+03 1.80+03 2.00+03 2.50+03 5.00+03 7.50+03 1.00+04 1.50+04 1.80+04 2.00+04 3.00+04 4.00+04 5.00+04 6.00+04 7.00+04 8.00+04 9.00+04 1.00+05\n");
+     
+     //std::cout << numPrint << totalNumStates << max_length; 
+     //std::flush(std::cout);
+
+     double ground_energy = Eigenstates[0].energy;
+     double energy_above_ground; 
+     for (int kk = 0;kk<numberToPrint;kk++) {
+         //index = I[kk];
+         Eigenstate state = Eigenstates[kk];
+         energy_above_ground = (state.energy - ground_energy)*2.0; 
+         state.make_string(max_length);
+         //std::cout<<state.expansion_string;
+         //std::flush(std::cout);
+         //cout << energy_above_ground << " ";
+         //cout << state.parity;
+         //printf("%5d, %4.1f, %c, %12.9f, %s",kk+1,state.jmom,state.parity,energy_above_ground,state.expansion_string.c_str());
+         state.make_string_adas(ground_energy,kk);
+         //printf("%f",JMOM);
+         cout << '\n';
+     } 
+ 
+     printf("NAME:\n");
+     printf("DATE:\n");
+     printf("\n");
+     printf("\n");
+     printf("\n");
+     printf("                      ENTER DETAILS OF CALCULATION\n");                  
+     printf("\n");
+     printf("\n");
+     printf("\n");
+     printf("\n");
+     printf(".\n");
+ 
+ }
 

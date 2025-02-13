@@ -2,17 +2,43 @@
 #include <fstream>
 #include "read.cpp"
 #include "argparse.cpp"
+//#include "Eigenstate.cpp"
+#include <vector>
 
 using namespace std;
 
+int mainFunc(const char* filename, int num, bool adasbool){
+
+    //Variables I need in all scopes
+    vector<Eigenstate> Eigenstates;
+    int totalNumStates;
+    int maxLength;
+
+    parseLSJFile(filename,Eigenstates,totalNumStates,maxLength);
+    if (adasbool){
+        adas(Eigenstates,num,totalNumStates,maxLength);
+
+    } else{
+      displayLSJ(Eigenstates,num,totalNumStates,maxLength);
+    }
+
+}
+
 int main(int argc, char* argv[]) {
-  
+  bool adasbool = false;
   //If the user does not give me any information, print the help message.
   if(cmdOptionExists(argv, argv+argc, "-h"))
     {
         printHelp();
         return 0;
     }
+
+  if(cmdOptionExists(argv, argv+argc, "-a"))
+    {
+      adasbool = true;
+    }
+
+
 
   int num = -1; 
   if(cmdOptionExists(argv, argv+argc, "-n"))
@@ -36,7 +62,8 @@ int main(int argc, char* argv[]) {
         char * file_path = getCmdOption(argv, argv + argc, "-f");
         //string file_path = "SeIII_000.lsj.lbl";
         //cout << file_path << "\n" ;
-        parseLSJFile(file_path,num);
+        mainFunc(file_path,num,adasbool);
+
     }
   else{
         //no file - no program.
@@ -48,3 +75,4 @@ int main(int argc, char* argv[]) {
   
   return 0;
 }
+
