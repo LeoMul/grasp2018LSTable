@@ -7,7 +7,7 @@
 
 using namespace std;
 
-int mainFunc(const char* filename, int num, bool adasbool){
+void mainFunc(const char* filename, int num, bool adasbool){
 
     //Variables I need in all scopes
     vector<Eigenstate> Eigenstates;

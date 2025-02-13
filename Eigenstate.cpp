@@ -1,5 +1,6 @@
 #include "Eigenstate.h"
 #include <format>
+#include <cstring>
 using namespace std;
 
 double ryd_to_cm = 109737.316;
@@ -19,7 +20,7 @@ int convertAngToNumber(char angLetter){
 
 
 void Eigenstate::make_string_adas(double ground_energy,int index){
-    adas_string = expansion_csfs[0]; 
+    string adas_string = expansion_csfs[0]; 
     adas_string.erase(remove(adas_string.begin(), adas_string.end(), '('), adas_string.end()); //remove A from string
     adas_string.erase(remove(adas_string.begin(), adas_string.end(), ')'), adas_string.end()); //remove A from string
     //adas_string.erase(remove(adas_string.begin(), adas_string.end(), '.'), adas_string.end()); //remove A from string

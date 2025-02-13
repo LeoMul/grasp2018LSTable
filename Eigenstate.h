@@ -26,4 +26,5 @@ class Eigenstate {
     //print for now
         void display();
         void make_string(int max_length);
+        void make_string_adas(double ground_energy,int index);
 };
