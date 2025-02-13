@@ -178,6 +178,12 @@ void displayLSJ(vector<Eigenstate> eigVector,int numPrint ,int totalNumStates, i
         cout << '\n';
     } 
 }
+#include <filesystem>
+namespace fs = std::filesystem;
+
+bool fileExists(const std::string& filename) {
+    return fs::exists(filename);
+}
 
  void adas(vector<Eigenstate> Eigenstates,int numPrint ,int totalNumStates, int max_length){
      //int numberToPrint = numPrint;
@@ -190,21 +196,69 @@ void displayLSJ(vector<Eigenstate> eigVector,int numPrint ,int totalNumStates, i
      
      //std::cout << numPrint << totalNumStates << max_length; 
      //std::flush(std::cout);
+     
+
+
+
+    size_t * I = (size_t *) malloc(totalNumStates*sizeof(size_t));
+     for (int kk = 0;kk<totalNumStates;kk++) {
+         I[kk] = size_t(kk);
+     }
+
+
 
      double ground_energy = Eigenstates[0].energy;
+     
+     //need all the energies
+     double * energies = (double *) malloc(totalNumStates*sizeof(double));
+
+     for(int ii = 0;ii<totalNumStates; ii++){
+        energies[ii] = Eigenstates[ii].energy-ground_energy;
+     }
+     double* energiesArray = &energies[0];
+     
+    if (fileExists("dstg3")){
+    int numshifted = 0; 
+    vector<double> shiftedEnergys;
+    
+    ifstream File("dstg3");
+    vector<string> TextArray;
+    string Text;
+    for (int ii=0;ii < 5; ii++){
+        getline (File, Text,'\n');
+    }
+    
+    while(!File.eof()){
+        getline (File, Text,'\n');
+        TextArray = ParseLine(Text);
+        //std::cout << TextArray[0] << "\n";
+        numshifted++;
+        //there has to be a better way 
+        shiftedEnergys.push_back(atof(TextArray[0].c_str()));
+     }
+
+     for(int ii = 0;ii<numshifted; ii++){
+        energies[ii] = shiftedEnergys[ii];
+     }
+     argQuickSort(energiesArray,I,0,totalNumStates-1);
+     }
+
+     //for (int kk = 0;kk<totalNumStates;kk++){
+     //   std::cout<<I[kk] << "\n";
+     //}
+
+
      double energy_above_ground; 
+     size_t index;
      for (int kk = 0;kk<numberToPrint;kk++) {
-         //index = I[kk];
-         Eigenstate state = Eigenstates[kk];
-         energy_above_ground = (state.energy - ground_energy)*2.0; 
-         state.make_string(max_length);
-         //std::cout<<state.expansion_string;
+         index = I[kk];
+         //std::cout<<index << "\n";
          //std::flush(std::cout);
-         //cout << energy_above_ground << " ";
-         //cout << state.parity;
-         //printf("%5d, %4.1f, %c, %12.9f, %s",kk+1,state.jmom,state.parity,energy_above_ground,state.expansion_string.c_str());
-         state.make_string_adas(ground_energy,kk);
-         //printf("%f",JMOM);
+         Eigenstate state = Eigenstates[index];
+         energy_above_ground = energiesArray[index]; ///(state.energy - ground_energy)*2.0; 
+
+         state.make_string(max_length);
+         state.make_string_adas(energy_above_ground,kk);
          cout << '\n';
      } 
  

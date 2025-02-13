@@ -27,7 +27,7 @@ void Eigenstate::make_string_adas(double ground_energy,int index){
 
     //printf(%12.9f.);
 
-    double energy_above_ground = (energy - ground_energy)*2.0 * ryd_to_cm; 
+    double energy_above_ground = ground_energy * ryd_to_cm; 
 
     char * tab2 = new char [adas_string.length()+1];
     strcpy (tab2, adas_string.c_str());
