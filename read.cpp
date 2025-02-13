@@ -21,10 +21,15 @@ float decodeAngularMomentum(string jmomString){
         if(jmomString != "/"){
             twojArray[ii] = jmomString[ii];
         } else {
+            //found a / -- return 2j/2 
             break;
+            float j = atof(twojArray)*0.5;
+            return j ;
+
         }
     }
-    float j = atof(twojArray)*0.5;
+    //else we found regular j
+    float j = atof(twojArray);
     //std::cout << j << " "<< jmomString << '\n';
     return j;
 }
