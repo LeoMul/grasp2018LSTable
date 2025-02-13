@@ -6,7 +6,7 @@ class Eigenstate {
     public:
     //atributes;
         double energy;
-        int jmom;
+        float jmom;
         char parity;
         vector<double> expansion_coefficients;
         vector<string> expansion_csfs;
@@ -14,7 +14,7 @@ class Eigenstate {
     //definition;
         Eigenstate(
             double energy_in,
-            int jmom_in,
+            float jmom_in,
             char parity_in,
             vector<double> expansion_coefficients_in,
             vector<string> expansion_csfs_in

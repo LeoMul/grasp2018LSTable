@@ -104,7 +104,7 @@ void Eigenstate::display(){
         expansion_string += "["+expansion_csfs[ii]+"]" +" ";
     }
 
-    printf("%15.8lf %d %s\n",energy,jmom,expansion_string.c_str());
+    printf("%15.8lf %f %s\n",energy,jmom,expansion_string.c_str());
 }
 //
 //Eigenstate::Eigenstate(
