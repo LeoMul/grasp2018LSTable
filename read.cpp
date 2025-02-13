@@ -208,12 +208,13 @@ bool fileExists(const std::string& filename) {
 
 
      double ground_energy = Eigenstates[0].energy;
-     
+     //std::cout<< ground_energy << "\n";
      //need all the energies
      double * energies = (double *) malloc(totalNumStates*sizeof(double));
-
+     
+     //convert to Ryd and subtract ground to compare with shifted RYdberg unitted energies in dstg3.
      for(int ii = 0;ii<totalNumStates; ii++){
-        energies[ii] = Eigenstates[ii].energy-ground_energy;
+        energies[ii] = (Eigenstates[ii].energy-ground_energy)*2.0;
      }
      double* energiesArray = &energies[0];
      
@@ -236,6 +237,7 @@ bool fileExists(const std::string& filename) {
         //there has to be a better way 
         shiftedEnergys.push_back(atof(TextArray[0].c_str()));
      }
+     std::cout << TextArray[0] << "\n";
 
      for(int ii = 0;ii<numshifted; ii++){
         energies[ii] = shiftedEnergys[ii];
