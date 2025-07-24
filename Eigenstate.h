@@ -11,6 +11,8 @@ class Eigenstate {
         vector<double> expansion_coefficients;
         vector<string> expansion_csfs;
         string expansion_string;
+        string firstString; 
+        string firstTerm;
     //definition;
         Eigenstate(
             double energy_in,

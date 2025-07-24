@@ -75,16 +75,60 @@ void slice(const char* str, char* result, size_t start, size_t end) {
 
 
 void Eigenstate::make_string(int max_length){
+    firstString = expansion_csfs[0]; 
+    //firstString.erase(remove(firstString.begin(), firstString.end(), '('), firstString.end()); //remove A from string
+    //firstString.erase(remove(firstString.begin(), firstString.end(), ')'), firstString.end()); //remove A from string
+    //adas_string.erase(remove(adas_string.begin(), adas_string.end(), '.'), adas_string.end()); //remove A from string
+
+    //printf(%12.9f.);
+
+    //double energy_above_ground = ground_energy * ryd_to_cm; 
+
+    char * tab2 = new char [firstString.length()+1];
+    strcpy (tab2, firstString.c_str());
+
+    //General C/C++ malarky
+    int angL = convertAngToNumber(tab2[strlen(tab2)-1]);
+    char* x = &tab2[strlen(tab2)-2];
+    int angS = atoi(x);
+
+    std::replace( firstString.end()-4, firstString.end(), '_', '('); // replace all 'x' to 'y'
+    if(parity=='-'){
+        firstString = firstString + "*)";
+
+    } else { 
+        firstString = firstString + " )";
+
+    }
+    //std::cout<<firstString;
+
+    //take slice
+    //make up to correct length
+
+    //string thisSlice = firstString; 
+    //if (thisSlice.length()>= 13){
+    //     thisSlice = firstString.substr(firstString.size()-13,firstString.size()); 
+    //}
+//
+    //if (thisSlice.length() < 13){
+    //    for(int ii=0;ii<14-thisSlice.length();ii++){
+    //        thisSlice = ' ' + thisSlice;
+    //    }
+    //}
+
+
     size_t test = 3;
     size_t max_iter = min(test,expansion_coefficients.size());
     
-
     for (int ii = 0; ii < max_iter;ii++){ 
         string spaces = "";
 
         if (ii >0 ){expansion_string+="+ ";} 
-        
-        expansion_string += to_string(100.0*expansion_coefficients[ii]) +"% ";
+        string spacedumb = "";
+        if (100.0*expansion_coefficients[ii] < 10.0){
+            spacedumb = " ";
+        }
+        expansion_string += spacedumb+to_string(100.0*expansion_coefficients[ii]) +"% ";
         int diff = max_length - expansion_csfs[ii].size();
         for (int jj = 0; jj<diff;jj++){
             spaces += " ";

@@ -30,6 +30,9 @@ float decodeAngularMomentum(string jmomString){
     }
     //else we found regular j
     float j = atof(twojArray);
+  //  if (j == 60.0){
+    //std::cout << atof(twojArray) << twojArray << "\n";
+  //  }
     //std::cout << j << " "<< jmomString << '\n';
     return j;
 }
@@ -102,7 +105,6 @@ void parseLSJFile(const char* filename,
                     max_length = expansion_csfs[jj].size();
                 }
            }
-
            expansion_coef.clear();
            expansion_csfs.clear();
            positions.push_back(pos);
@@ -115,6 +117,9 @@ void parseLSJFile(const char* filename,
            pos    = stoi(TextArray[0]);
 
            JMOM   = decodeAngularMomentum(TextArray[1]);
+           if(JMOM == 60.0){
+            std::cout << "hello" << TextArray[1] << "\n";
+           }
            parity = TextArray[2].c_str()[0];
            energy = stod(TextArray[3]);
        }
@@ -157,7 +162,7 @@ void parseLSJFile(const char* filename,
 
 void displayLSJ(vector<Eigenstate> eigVector,int numPrint ,int totalNumStates, int max_length){
     size_t index;
-    string header = "Level,  J, P,   Energy(Ry), ASF\n";
+    string header = "Index,         First Component,          J,   Energy(Ry), LSJ Expansion (3 largest %)\n";
 
     int numberToPrint = totalNumStates; 
     if (numPrint != -1){ 
@@ -169,20 +174,22 @@ void displayLSJ(vector<Eigenstate> eigVector,int numPrint ,int totalNumStates, i
     //printf("%d hello\n",numberToPrint);
     //std::flush(std::cout);
     printf("%s",header.c_str());
-
+    //%13s
     for (int kk = 0;kk<numberToPrint;kk++) {
         Eigenstate state = eigVector[kk];
         energy_above_ground = (state.energy - ground_energy)*2.0; 
         state.make_string(max_length);
-        printf("%5d, %4.1f, %c, %12.9f, %s",kk+1,state.jmom,state.parity,energy_above_ground,state.expansion_string.c_str());
+        //sstd::cout << state.firstString << "\n";
+        printf("%5d,%30s, %4.1f, %12.9f, %s",kk+1,state.firstString.c_str(),state.jmom,energy_above_ground,state.expansion_string.c_str());
         cout << '\n';
     } 
 }
-#include <filesystem>
-namespace fs = std::filesystem;
+//namespace fs = std::filesystem;
 
 bool fileExists(const std::string& filename) {
-    return fs::exists(filename);
+    //needs worked on - doesnt work for gcc < 17.
+    //return std::filesystem::exists(filename);
+    return false;
 }
 
  void adas(vector<Eigenstate> Eigenstates,int numPrint ,int totalNumStates, int max_length){
@@ -218,7 +225,8 @@ bool fileExists(const std::string& filename) {
      }
      double* energiesArray = &energies[0];
      
-    if (fileExists("dstg3")){
+    if (true){
+        std::cout << "found dstg3\n";
     int numshifted = 0; 
     vector<double> shiftedEnergys;
     
@@ -238,9 +246,11 @@ bool fileExists(const std::string& filename) {
         shiftedEnergys.push_back(atof(TextArray[0].c_str()));
      }
      std::cout << TextArray[0] << "\n";
-
+     std::cout << numshifted; 
      for(int ii = 0;ii<numshifted; ii++){
         energies[ii] = shiftedEnergys[ii];
+        energiesArray[ii] = shiftedEnergys[ii];
+        
      }
      argQuickSort(energiesArray,I,0,totalNumStates-1);
      }
