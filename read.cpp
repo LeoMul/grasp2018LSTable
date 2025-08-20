@@ -14,11 +14,11 @@ using namespace std;
 #define COUNT (4*1024*1024)             // number of values to sort
 
 float decodeAngularMomentum(string jmomString){
-    char twojArray[4];
+    char twojArray[4] = "";
     //cout << "hello"<<jmomString << '\n';
     //std::flush(std::cout);
     for (int ii =0;ii<jmomString.size();ii++){
-        if(jmomString != "/"){
+        if(jmomString[ii] != '/'){
             twojArray[ii] = jmomString[ii];
         } else {
             //found a / -- return 2j/2 
@@ -30,6 +30,7 @@ float decodeAngularMomentum(string jmomString){
     }
     //else we found regular j
     float j = atof(twojArray);
+//    std::cout << twojArray << "\n";
   //  if (j == 60.0){
     //std::cout << atof(twojArray) << twojArray << "\n";
   //  }
@@ -66,7 +67,6 @@ void parseLSJFile(const char* filename,
    //std::flush(std::cout);
    JMOM   = decodeAngularMomentum(TextArray[1]);
 
-
    string jstring = TextArray[1];
 
    parity = TextArray[2].c_str()[0];
@@ -81,7 +81,7 @@ void parseLSJFile(const char* filename,
    vector<Eigenstate> EigenStateCopy;
    bool inEingstate = false;
 
-   max_length = 0;
+   max_length = 40;
    
 
 
@@ -117,9 +117,11 @@ void parseLSJFile(const char* filename,
            pos    = stoi(TextArray[0]);
 
            JMOM   = decodeAngularMomentum(TextArray[1]);
-           if(JMOM == 60.0){
-            std::cout << "hello" << TextArray[1] << "\n";
-           }
+//           std::cout << "hello" << TextArray[1] << '\n';
+
+           //if(JMOM == 60.0){
+           // std::cout << "hello" << TextArray[1] << "\n";
+           //}
            parity = TextArray[2].c_str()[0];
            energy = stod(TextArray[3]);
        }
@@ -180,7 +182,7 @@ void displayLSJ(vector<Eigenstate> eigVector,int numPrint ,int totalNumStates, i
         energy_above_ground = (state.energy - ground_energy)*2.0; 
         state.make_string(max_length);
         //sstd::cout << state.firstString << "\n";
-        printf("%5d,%30s, %4.1f, %12.9f, %s",kk+1,state.firstString.c_str(),state.jmom,energy_above_ground,state.expansion_string.c_str());
+        printf("%5d,%35s, %4.1f, %12.9f, %s",kk+1,state.firstString.c_str(),state.jmom,energy_above_ground,state.expansion_string.c_str());
         cout << '\n';
     } 
 }
